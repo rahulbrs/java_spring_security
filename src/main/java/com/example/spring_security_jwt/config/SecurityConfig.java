@@ -17,13 +17,14 @@ import com.example.spring_security_jwt.service.UserService;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-	private JwtUtil jwtUtil;
-	public 	UserService userService;
-	
+	private final JwtUtil jwtUtil;
+	public 	final UserService userService;
+	private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    public SecurityConfig(JwtUtil jwtUtil, UserService userService) {
+    public SecurityConfig(JwtUtil jwtUtil, UserService userService, JwtAuthenticationFilter jwtAuthenticationFilter) {
         this.jwtUtil = jwtUtil;
         this.userService = userService;
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 	
 	@Bean
@@ -37,7 +38,7 @@ public class SecurityConfig {
 		.and()
 		.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
 		.and()
-		.addFilterBefore(new JwtAuthenticationFilter(jwtUtil, userService), UsernamePasswordAuthenticationFilter.class);
+		.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class); //Use Injected Filter
 		
 		return http.build();
 	}
